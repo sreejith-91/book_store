@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{%load static %}
+{%block content%}
+            <div class="row">
+              <div class="col-md-12 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <h4 class="card-title mb-0">Book Inventory</h4>
+                    <div class="table-responsive">
+                      <table class="table table-stretched">
+                        <thead>
+                          <tr>
+                            <th>Book Name</th>
+                            <th>Author</th>
+                            <th>Book Count</th>
+                            <th>Book Available</th>
+                            <th>Book Borrowed Count</th>
+                            <th></th>Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            {% for book in book_detail %}
+                            <td>
+                              <p class="mb-1 text-dark font-weight-medium">{{book.name|capfirst}}</p>
+                            </td>
+                            <td class="font-weight-medium">{{book.author|capfirst}}</td>
+                            <td class="font-weight-medium">{{book.total_book_count}}</td>
+                            <td class="font-weight-medium">{{book.book_available}}</td>
+                            <td class="font-weight-medium">{{book.book_borrowed}}</td>
+                            <td class="font-weight-medium">
+                              <button class="borrow_book btn btn-success" type="button" >Borrow</button>
+                            </td>
+                          </tr>
+                          {%empty%}
+                          <tr>
+                            <td colspan="5" class="text-center">No data</td>
+                          </tr>
+                        {%endfor%}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+{%endblock%}

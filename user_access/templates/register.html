@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Book Inventory</title>
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="{% static 'assets/vendors/iconfonts/mdi/css/materialdesignicons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/iconfonts/ionicons/css/ionicons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/iconfonts/typicons/src/font/typicons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/iconfonts/flag-icon-css/css/flag-icon.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/css/vendor.bundle.base.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/css/vendor.bundle.addons.css' %}">
+    <!-- endinject -->
+    <!-- plugin css for this page -->
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <link rel="stylesheet" href="{% static 'assets/css/shared/style.css' %}">
+    <!-- endinject -->
+    <link rel="shortcut icon" href="{% static 'assets/images/favicon.png' %}" />
+  </head>
+  <body>
+    <div class="container-scroller">
+      <div class="container-fluid page-body-wrapper full-page-wrapper">
+        <div class="content-wrapper d-flex align-items-center auth auth-bg-1 theme-one">
+          <div class="row w-100">
+            <div class="col-lg-4 mx-auto">
+              <div class="auto-form-wrapper">
+                <form id="registerForm" class="registerForm" method="post">
+                  <div class="form-group">
+                    <label class="label">First Name</label>
+                    <div class="input-group">
+                      <input type="text" class="form-control required" name="first_name" placeholder="First Name">
+                      <div class="input-group-append">
+                        <span class="input-group-text">
+                          <i class="mdi mdi-check-circle-outline"></i>
+                        </span>
+                      </div>
+                      <span class="error_span"></span>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="label">Last Name</label>
+                    <div class="input-group">
+                      <input type="text" class="form-control required" name="last_name" placeholder="Last Name">
+                      <div class="input-group-append">
+                        <span class="input-group-text">
+                          <i class="mdi mdi-check-circle-outline"></i>
+                        </span>
+                      </div>
+                      <span class="error_span"></span>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="label">Email</label>
+                    <div class="input-group">
+                      <input type="text" class="form-control required" name="email" placeholder="Username">
+                      <div class="input-group-append">
+                        <span class="input-group-text">
+                          <i class="mdi mdi-check-circle-outline"></i>
+                        </span>
+                      </div>
+                      <span class="error_span"></span>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="label">Password</label>
+                    <div class="input-group">
+                      <input type="password" name="password" class="form-control required" placeholder="*********">
+                      <div class="input-group-append">
+                        <span class="input-group-text">
+                          <i class="mdi mdi-check-circle-outline"></i>
+                        </span>
+                      </div>
+                      <span class="error_span"></span>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <button type="button" class="register_user btn btn-primary submit-btn btn-block">Register</button>
+                    <a href="{% url 'user_access:login' %}" class="btn btn-success submit-btn btn-block">Login</a>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- content-wrapper ends -->
+      </div>
+      <!-- page-body-wrapper ends -->
+    </div>
+    <!-- container-scroller -->
+    <!-- plugins:js -->
+    <script src="{% static 'assets/vendors/js/vendor.bundle.base.js' %}"></script>
+    <script src="{% static 'assets/vendors/js/vendor.bundle.addons.js' %}"></script>
+    <!-- endinject -->
+    <!-- inject:js -->
+    <script src="{% static 'assets/js/shared/off-canvas.js' %}"></script>
+    <script src="{% static 'assets/js/shared/misc.js' %}"></script>
+    <!-- endinject -->
+  <script>
+  var req = null;
+    		$(document).on('click','.register_user',function(){
+		$('.register_user').prop('disabled',true)
+		$('.error').remove()
+		var data = new FormData($('.registerForm').get(0));
+		flag = validateForm($('.registerForm :input'))
+		data.append('csrfmiddlewaretoken',"{{csrf_token}}")
+		if (req != null) req.abort();
+		if(flag){
+         req = $.ajax({
+            type: "POST",
+            url : "{% url 'user_access:register' %}",
+            data: data,
+            processData: false,
+            contentType: false,
+            success: function(data) {
+            	$('.register_user').prop('disabled',false)
+                if(data.status == true){
+                    $('#registerForm')[0].reset()
+                     alert("User Successfully Registered")
+
+                }
+                else{
+                    console.log(data.errors)
+                    var $inputs = $('.registerForm :input');
+                    console.log($inputs)
+                    $.each(data.errors, function( name, value )  {
+                       $inputs.each(function(index, dom){
+                           current_name = dom.name;
+                           if (current_name == name){
+                                  var $error_section = $(this).closest("div").find('.error_span');
+                                  $error_section.html("<p class='error'>"+value+"</p>");
+
+                           }
+                       });
+                    });
+                }
+            }
+        });
+        }
+        else{
+          $('.register_user').prop('disabled',false)
+        }
+		})
+
+function validateForm(form_inputs)
+{
+    flag =true
+    var $inputs = form_inputs
+    $inputs.each(function(index, dom){
+          var $error_section = $(this).closest("div").find('span');
+          if(($(this).val() == "")&& $(this).hasClass('required')&&$(this).is(':visible')){
+            flag = false
+                        console.log($error_section.length)
+                        console.log($(this).closest("div").find('.error_span'))
+
+                  $error_section.html("<p class='error'>This field is required</p>");
+              }
+              else
+              {
+                 //$error_section.html("")
+              }
+
+   });
+   return flag
+}
+
+  </script>
+  </body>
+</html>
