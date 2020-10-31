@@ -1,0 +1,36 @@
+<table class="table table-stretched">
+                        <thead>
+                          <tr>
+                            <th>Book Name</th>
+                            <th>Author</th>
+                            <th>Book Count</th>
+                            <th>Book Available</th>
+                            <th>Book Borrowed Count</th>
+                            <th>Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            {% for book in book_detail %}
+                            <td class="font-weight-medium">
+                              {{book.book_name|capfirst}}
+                            </td>
+                            <td class="font-weight-medium">{{book.author|capfirst}}</td>
+                            <td class="font-weight-medium">{{book.total_book_count}}</td>
+                            <td class="font-weight-medium">{{book.book_available}}</td>
+                            <td class="font-weight-medium">{{book.book_borrowed}}</td>
+                            <td class="font-weight-medium">
+                              {% if book.total_book_count == book.book_borrowed %}
+                              No Action
+                              {%else%}
+                              <button data-slug="{{book.id}}" class="borrow_book btn btn-success" type="button" >Borrow</button>
+                              {%endif%}
+                            </td>
+                          </tr>
+                          {%empty%}
+                          <tr>
+                            <td colspan="5" class="text-center">No data</td>
+                          </tr>
+                        {%endfor%}
+                        </tbody>
+                      </table>

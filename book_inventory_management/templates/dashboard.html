@@ -6,42 +6,53 @@
                 <div class="card">
                   <div class="card-body">
                     <h4 class="card-title mb-0">Book Inventory</h4>
-                    <div class="table-responsive">
-                      <table class="table table-stretched">
-                        <thead>
-                          <tr>
-                            <th>Book Name</th>
-                            <th>Author</th>
-                            <th>Book Count</th>
-                            <th>Book Available</th>
-                            <th>Book Borrowed Count</th>
-                            <th></th>Action</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            {% for book in book_detail %}
-                            <td>
-                              <p class="mb-1 text-dark font-weight-medium">{{book.name|capfirst}}</p>
-                            </td>
-                            <td class="font-weight-medium">{{book.author|capfirst}}</td>
-                            <td class="font-weight-medium">{{book.total_book_count}}</td>
-                            <td class="font-weight-medium">{{book.book_available}}</td>
-                            <td class="font-weight-medium">{{book.book_borrowed}}</td>
-                            <td class="font-weight-medium">
-                              <button class="borrow_book btn btn-success" type="button" >Borrow</button>
-                            </td>
-                          </tr>
-                          {%empty%}
-                          <tr>
-                            <td colspan="5" class="text-center">No data</td>
-                          </tr>
-                        {%endfor%}
-                        </tbody>
-                      </table>
+                    <div class="table-responsive book_list">
+                    {{data_html}}
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+<div class="row">
+              <div class="col-md-12 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <h4 class="card-title mb-0">Borrowed Details</h4>
+                    <div class="table-responsive book_borrowed_list">
+                    {{borrowed_list}}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
 {%endblock%}
+
+ {% block script %}
+<script>
+  $(document).on('click','.borrow_book',function(){
+    var data = new FormData();
+			data.append('csrfmiddlewaretoken',"{{csrf_token}}")
+			data.append("slug_val",$(this).attr('data-slug'))
+			$.ajax({
+							type: "POST",
+							url : "{% url 'book_inventory_management:update_inventory' %}",
+							data: data,
+							processData: false,
+							contentType: false,
+							success: function(data) {
+								if(data.status == true){
+									$('.book_list').html(data.data_html );
+									$('.book_borrowed_list').html(data.borrowed_list );
+									alert('success')
+								}
+								else{
+                                    alert(data.message)
+								}
+							}
+						});
+
+
+  })
+</script>
+{% endblock %}
