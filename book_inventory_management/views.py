@@ -23,7 +23,10 @@ class BookListView(TemplateView):
         context = super(BookListView, self).get_context_data(**kwargs)
         context['book_detail'] = get_book_details()
         context['data_html'] = render_to_string('ajax/book_list.html', request=self.request, context=context)
-        context['borrow_detail'] = get_book_borrow_details()
+        if self.request.user.is_superuser:
+            context['borrow_detail'] = get_book_borrow_details()
+        else:
+            context['borrow_detail'] = get_book_borrow_details(user=self.request.user)
         context['borrowed_list'] = render_to_string('ajax/borrowed_list.html', request=self.request, context=context)
 
         return context
@@ -53,7 +56,10 @@ class UpdateInventory(View):
                         )
                         book_data['book_detail'] = get_book_details()
                         data['data_html'] = render_to_string('ajax/book_list.html', request=request, context=book_data)
-                        book_data['borrow_detail'] = get_book_borrow_details()
+                        if self.request.user.is_superuser:
+                            book_data['borrow_detail'] = get_book_borrow_details()
+                        else:
+                            book_data['borrow_detail'] = get_book_borrow_details(user=self.request.user)
                         data['borrowed_list'] = render_to_string('ajax/borrowed_list.html', request=request,
                                                                  context=book_data)
 

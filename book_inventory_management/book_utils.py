@@ -12,7 +12,10 @@ def get_book_details(slug=None, book_id=None):
     return result
 
 
-def get_book_borrow_details():
-    result = BookBorrowDetail.objects.all()
+def get_book_borrow_details(user=None):
+    if user:
+        result = BookBorrowDetail.objects.filter(borrowed_by=user)
+    else:
+        result = BookBorrowDetail.objects.all()
     return result
 
